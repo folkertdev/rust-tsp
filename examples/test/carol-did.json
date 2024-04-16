@@ -4,11 +4,11 @@
     "https://w3id.org/security/suites/jws-2020/v1"
   ],
   "authentication": [
-    "did:web:did.tsp-test.org:user:bob#verification-key"
+    "did:web:did.tsp-test.org:user:carol#verification-key"
   ],
-  "id": "did:web:did.tsp-test.org:user:bob",
+  "id": "did:web:did.tsp-test.org:user:carol",
   "keyAgreement": [
-    "did:web:did.tsp-test.org:user:bob#encryption-key"
+    "did:web:did.tsp-test.org:user:carol#encryption-key"
   ],
   "service": [
     {
@@ -19,24 +19,24 @@
   ],
   "verificationMethod": [
     {
-      "controller": "did:web:did.tsp-test.org:user:bob",
-      "id": "did:web:did.tsp-test.org:user:bob#verification-key",
+      "controller": "did:web:did.tsp-test.org:user:carol",
+      "id": "did:web:did.tsp-test.org:user:carol#verification-key",
       "publicKeyJwk": {
         "crv": "Ed25519",
         "kty": "OKP",
         "use": "sig",
-        "x": "NBcP690uVtoJChxvBCxZyy2inI-R24G3aNBWOKwU5lI"
+        "x": "v_QoFe2_OsVLnxlEmPBKVlXhcnOKg1n6UBtExEPkbR8"
       },
       "type": "JsonWebKey2020"
     },
     {
-      "controller": "did:web:did.tsp-test.org:user:bob",
-      "id": "did:web:did.tsp-test.org:user:bob#encryption-key",
+      "controller": "did:web:did.tsp-test.org:user:carol",
+      "id": "did:web:did.tsp-test.org:user:carol#encryption-key",
       "publicKeyJwk": {
         "crv": "X25519",
         "kty": "OKP",
         "use": "enc",
-        "x": "QFn5SXupDgBTtzkGc2W3MvoSCHjd8uUD0dapfEXqET4"
+        "x": "W0KcpY5Sa1jQ2-UIqbzIqyvSp6QaZqsHVq9jeFkR_H0"
       },
       "type": "JsonWebKey2020"
     }
