@@ -75,8 +75,7 @@ async fn main() {
 
     tokio::task::spawn(async {
         let mut db = AsyncStore::new();
-        let piv: OwnedVid =
-            serde_json::from_str(include_str!("../../examples/test/p.json")).unwrap();
+        let piv: OwnedVid = serde_json::from_str(include_str!("../test/p.json")).unwrap();
         db.add_private_vid(piv).unwrap();
         db.verify_vid("did:web:did.tsp-test.org:user:q")
             .await
@@ -98,8 +97,7 @@ async fn main() {
 
     tokio::task::spawn(async {
         let mut db = AsyncStore::new();
-        let piv: OwnedVid =
-            serde_json::from_str(include_str!("../../examples/test/q.json")).unwrap();
+        let piv: OwnedVid = serde_json::from_str(include_str!("../test/q.json")).unwrap();
         db.add_private_vid(piv).unwrap();
         db.verify_vid("did:web:did.tsp-test.org:user:p")
             .await
@@ -123,7 +121,7 @@ async fn main() {
 
 #[cfg(debug_assertions)]
 async fn index() -> Html<String> {
-    Html(std::fs::read_to_string("demo-server/index.html").unwrap())
+    Html(std::fs::read_to_string("examples/index.html").unwrap())
 }
 
 #[cfg(not(debug_assertions))]
@@ -135,7 +133,7 @@ async fn index() -> Html<String> {
 async fn script() -> impl IntoResponse {
     (
         [(header::CONTENT_TYPE, "text/javascript")],
-        std::fs::read_to_string("demo-server/script.js").unwrap(),
+        std::fs::read_to_string("examples/script.js").unwrap(),
     )
 }
 
