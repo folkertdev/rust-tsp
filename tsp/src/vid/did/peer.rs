@@ -46,10 +46,10 @@ pub(crate) fn encode_did_peer(vid: &Vid) -> String {
 }
 
 pub(crate) fn verify_did_peer(parts: &[&str]) -> Result<Vid, VidError> {
-    let peer_parts = parts[2].split('.').collect::<Vec<&str>>();
+    let mut peer_parts = parts[2].split('.');
 
     // only numalgo 2 is supported
-    if peer_parts[0] != "2" {
+    if peer_parts.next() != Some("2") {
         return Err(VidError::ResolveVid(
             "only numalgo 2 is supported for did:peer",
         ));
@@ -59,12 +59,12 @@ pub(crate) fn verify_did_peer(parts: &[&str]) -> Result<Vid, VidError> {
     let mut public_enckey = None;
     let mut transport = None;
 
-    for part in &peer_parts[1..] {
+    let mut buf = [0; 34];
+
+    for part in peer_parts {
         match &part[0..2] {
             // Key Agreement (Encryption) + base58 multibase prefix
             "Ez" => {
-                let mut buf = [0; 34];
-
                 let count = bs58::decode(&part[2..])
                     .with_alphabet(bs58::Alphabet::BITCOIN)
                     .onto(&mut buf)
@@ -85,8 +85,6 @@ pub(crate) fn verify_did_peer(parts: &[&str]) -> Result<Vid, VidError> {
             }
             // Authentication (Verification) + base58 multibase prefix
             "Vz" => {
-                let mut buf = [0; 34];
-
                 let count = bs58::decode(&part[2..])
                     .with_alphabet(bs58::Alphabet::BITCOIN)
                     .onto(&mut buf)
