@@ -63,40 +63,48 @@ pub(crate) fn verify_did_peer(parts: &[&str]) -> Result<Vid, VidError> {
         match &part[0..2] {
             // Key Agreement (Encryption) + base58 multibase prefix
             "Ez" => {
-                let enckey_bytes = bs58::decode(&part[2..])
+                let mut buf = [0; 34];
+
+                let count = bs58::decode(&part[2..])
                     .with_alphabet(bs58::Alphabet::BITCOIN)
-                    .into_vec()
+                    .onto(&mut buf)
                     .map_err(|_| {
                         VidError::ResolveVid("invalid encoded encryption key in did:peer")
                     })?;
 
+                debug_assert_eq!(count, 34);
+
                 // multicodec for x25519-pub + length 32 bytes
-                if enckey_bytes[0] != 0xec || enckey_bytes[1] != 0x20 {
+                if let [0xec, 0x20, rest @ ..] = buf {
+                    public_enckey = rest.last_chunk::<32>().copied();
+                } else {
                     return Err(VidError::ResolveVid(
                         "invalid encryption key type in did:peer",
                     ));
                 }
-
-                public_enckey = enckey_bytes[2..].try_into().ok();
             }
             // Authentication (Verification) + base58 multibase prefix
             "Vz" => {
-                let sigkey_bytes = bs58::decode(&part[2..])
+                let mut buf = [0; 34];
+
+                let count = bs58::decode(&part[2..])
                     .with_alphabet(bs58::Alphabet::BITCOIN)
-                    .into_vec()
+                    .onto(&mut buf)
                     .map_err(|_| {
                         VidError::ResolveVid("invalid encoded verification key in did:peer")
                     })?;
 
+                debug_assert_eq!(count, 34);
+
                 // multicodec for ed25519-pub + length 32 bytes
-                if sigkey_bytes[0] != 0xed || sigkey_bytes[1] != 0x20 {
+                if let [0xed, 0x20, rest @ ..] = buf {
+                    if let Some(sigkey_bytes) = rest.last_chunk::<32>() {
+                        public_sigkey = ed25519_dalek::VerifyingKey::from_bytes(sigkey_bytes).ok();
+                    }
+                } else {
                     return Err(VidError::ResolveVid(
                         "invalid verification key type in did:peer",
                     ));
-                }
-
-                if let Ok(sigkey_bytes) = sigkey_bytes[2..].try_into() {
-                    public_sigkey = ed25519_dalek::VerifyingKey::from_bytes(sigkey_bytes).ok();
                 }
             }
             // start of base64url encoded service definition
